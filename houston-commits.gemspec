@@ -10,15 +10,20 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Bob Lail"]
   spec.email         = ["bob.lailfamily@gmail.com"]
 
-  spec.summary       = "TODO: Write a short summary, because Rubygems requires one."
-  spec.description   = "TODO: Write a longer description or delete this line."
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = "Defines an adapter for linking Houston projects to a version control system"
+  spec.homepage      = "https://github.com/houston/houston-commits"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ["lib"]
   spec.test_files = Dir["test/**/*"]
 
   spec.add_dependency "houston-core", ">= 0.8.0.pre"
+
+  # Implements Houston's VersionControl::GitAdapter
+  spec.add_dependency "rugged", "~> 0.24.0" # for speaking to Git  # <-- new version
+
+  # For integration with GitHub
+  spec.add_dependency "octokit", "~> 4.4.1"
 
   spec.add_development_dependency "bundler", "~> 1.11.2"
   spec.add_development_dependency "rake", "~> 10.0"

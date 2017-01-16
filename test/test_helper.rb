@@ -6,6 +6,8 @@ require "dummy/houston"
 Rails.application.initialize! unless Rails.application.initialized?
 
 require "rails/test_help"
+require "houston/test_helpers"
+require "houston/commits/test_helpers"
 
 if ENV["CI"] == "true"
   require "minitest/reporters"
@@ -20,7 +22,20 @@ end
 # from other libraries to be shown.
 Minitest.backtrace_filter = Minitest::BacktraceFilter.new
 
+
+FactoryGirl.factories.clear
+FactoryGirl.definition_file_paths = [File.expand_path("../factories", __FILE__)]
+FactoryGirl.find_definitions
+
+
+Houston.observer.async = false
+Houston.triggers.async = false
+
+
 class ActiveSupport::TestCase
+  include FactoryGirl::Syntax::Methods
+  include Houston::TestHelpers
+  include Houston::Commits::TestHelpers
 
   # Load fixtures from the engine
   self.fixture_path = File.expand_path("../fixtures", __FILE__)
@@ -28,9 +43,17 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  def path
+    File.expand_path("../", __FILE__)
+  end
 
 end
+
+
+class ActionController::TestCase
+  include Devise::Test::ControllerHelpers
+end
+
 
 require "capybara/rails"
 
