@@ -5,6 +5,7 @@ class GithubControllerTest < ActionController::TestCase
 
   setup do
     @routes = Houston::Commits::Engine.routes
+    @request.headers['Content-Type'] = 'application/json'
   end
 
 
@@ -14,7 +15,7 @@ class GithubControllerTest < ActionController::TestCase
     end
 
     should "respond with success" do
-      post :hooks, params: { hook: {} }
+      post :hooks
       assert_response :success
     end
   end
@@ -27,14 +28,14 @@ class GithubControllerTest < ActionController::TestCase
 
     should "respond with success" do
       stub.instance_of(Github::PullRequestEvent).process!
-      post :hooks, params: { hook: github_pull_request_event_payload }
+      post :hooks, body: github_pull_request_event_payload
       assert_response :success
     end
 
     should "create or update a GitHub::PullRequest" do
       the_pull_request = hash_including(a_pull_request.pick("html_url"))
       mock(Github::PullRequest).upsert!(the_pull_request, as: "baxterthehacker")
-      post :hooks, params: { hook: github_pull_request_event_payload }
+      post :hooks, body: github_pull_request_event_payload
     end
 
     should "add a label to GitHub::PullRequest when the action is \"labeled\"" do
@@ -42,8 +43,8 @@ class GithubControllerTest < ActionController::TestCase
       stub(Github::PullRequest).upsert! { pr }
       stub(pr).persisted? { true }
       mock.instance_of(Github::PullRequestEvent).replace_labels!(1, [{"name" => "new-label", "color" => "#445566"}], as: "baxterthehacker")
-      post :hooks, params: { hook: github_pull_request_event_payload(action: "labeled",
-        label: {"name" => "new-label", "color" => "#445566"}) }
+      post :hooks, body: github_pull_request_event_payload(action: "labeled",
+        label: {"name" => "new-label", "color" => "#445566"})
     end
 
     should "not add a label twice to GitHub::PullRequest when the action is \"labeled\"" do
@@ -51,8 +52,8 @@ class GithubControllerTest < ActionController::TestCase
       stub(Github::PullRequest).upsert! { pr }
       stub(pr).persisted? { true }
       mock.instance_of(Github::PullRequestEvent).replace_labels!(1, [{"name" => "new-label", "color" => "#445566"}], as: "baxterthehacker")
-      post :hooks, params: { hook: github_pull_request_event_payload(action: "labeled",
-        label: {"name" => "new-label", "color" => "#445566"}) }
+      post :hooks, body: github_pull_request_event_payload(action: "labeled",
+        label: {"name" => "new-label", "color" => "#445566"})
     end
 
     should "remove a label to GitHub::PullRequest when the action is \"unlabeled\"" do
@@ -60,8 +61,8 @@ class GithubControllerTest < ActionController::TestCase
       stub(Github::PullRequest).upsert! { pr }
       stub(pr).persisted? { true }
       mock.instance_of(Github::PullRequestEvent).replace_labels!(1, [], as: "baxterthehacker")
-      post :hooks, params: { hook: github_pull_request_event_payload(action: "unlabeled",
-        label: {"name" => "removed-label", "color" => "#445566"}) }
+      post :hooks, body: github_pull_request_event_payload(action: "unlabeled",
+        label: {"name" => "removed-label", "color" => "#445566"})
     end
   end
 
@@ -73,15 +74,15 @@ class GithubControllerTest < ActionController::TestCase
 
     should "respond with success" do
       stub.instance_of(Github::PostReceiveEvent).process!
-      post :hooks, params: { hook: github_push_event_payload }
+      post :hooks, body: github_push_event_payload
       assert_response :success
     end
 
     should "trigger a `hooks:project:post_receive` event for the project" do
       project = create(:project, slug: "public-repo")
-      expected_payload = hash_including(github_push_event_payload.slice("before", "after"))
+      expected_payload = hash_including(MultiJson.load(github_push_event_payload).slice("before", "after"))
       mock(Houston.observer).fire("hooks:project:post_receive", project: project, params: expected_payload)
-      post :hooks, params: { hook: github_push_event_payload }
+      post :hooks, body: github_push_event_payload
     end
   end
 
@@ -92,7 +93,7 @@ class GithubControllerTest < ActionController::TestCase
     end
 
     should "respond with not_found" do
-      post :hooks, params: { hook: {} }
+      post :hooks
       assert_response :not_found
     end
   end
@@ -101,14 +102,14 @@ class GithubControllerTest < ActionController::TestCase
 private
 
   def github_push_event_payload
-    @github_push_event_payload ||= MultiJson.load(
-      File.read("#{path}/data/github_push_event_payload.json"))
+    @github_push_event_payload ||= File.read("#{path}/data/github_push_event_payload.json")
   end
 
   def github_pull_request_event_payload(options={})
-    { action: "opened",
+    MultiJson.dump({
+      action: "opened",
       sender: {login: "baxterthehacker"},
-      pull_request: a_pull_request }.merge(options)
+      pull_request: a_pull_request }.merge(options))
   end
 
   def a_pull_request

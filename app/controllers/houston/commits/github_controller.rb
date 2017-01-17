@@ -21,8 +21,8 @@ module Houston
           head 200
 
         elsif event_processor = EVENT_HANDLERS[event]
-          payload = params.fetch "hook"
-          event_processor.process! payload.to_h
+          payload = MultiJson.load(request.raw_post)
+          event_processor.process! payload
           head 200
 
         else
