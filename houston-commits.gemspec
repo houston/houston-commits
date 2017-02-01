@@ -17,10 +17,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.test_files = Dir["test/**/*"]
 
-  spec.add_dependency "houston-core", ">= 0.8.0.pre"
+  spec.add_dependency "houston-core", ">= 0.8.0"
 
   # Implements Houston's VersionControl::GitAdapter
-  spec.add_dependency "rugged", "~> 0.24.0" # for speaking to Git  # <-- new version
+  spec.add_dependency "rugged", "~> 0.25.0"
 
   # For integration with GitHub
   spec.add_dependency "octokit", "~> 4.4.1"
