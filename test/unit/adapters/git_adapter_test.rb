@@ -56,8 +56,10 @@ STR
     assert_equal readme, repo.read_file("README.md")
   end
 
-  test "#read_file should return nil for files that don't exist" do
-    assert_equal nil, repo.read_file("NOPE.md")
+  test "#read_file should raise FileNotFound for files that don't exist" do
+    assert_raises Houston::Adapters::VersionControl::FileNotFound do
+      repo.read_file("NOPE.md")
+    end
   end
 
 

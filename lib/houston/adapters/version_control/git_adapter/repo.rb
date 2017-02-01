@@ -113,12 +113,12 @@ module Houston
             tree = head.tree
             file_path.split("/").each do |segment|
               object = tree[segment]
-              return nil unless object
+              raise FileNotFound, "\"#{file_path}\" is not in #{to_s}##{commit}" unless object
               tree = connection.lookup object[:oid]
             end
             tree
           rescue Rugged::OdbError, Rugged::ReferenceError
-            raise FileNotFound, "\"#{file_path}\" is not in the repo #{to_s}"
+            raise FileNotFound, "\"#{file_path}\" is not in #{to_s}##{commit}"
           ensure
             release
           end
