@@ -107,8 +107,12 @@ module Houston
             ref.target.oid if ref
           end
 
+          def head
+            branch("master") || connection.head.target.oid
+          end
+
           def find_file(file_path, options={})
-            commit = options[:commit] || connection.head.target.oid
+            commit = options[:commit] || self.head
             head = find_commit(commit)
             tree = head.tree
             file_path.split("/").each do |segment|
