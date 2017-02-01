@@ -12,7 +12,6 @@ class Environment
   end
 
   def head
-    return (environment_name == "Production" ? "c7c7380" : "98318a3") if Rails.env.development?
     @head ||= last_deploy.try(:commit)
   end
 
