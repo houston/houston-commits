@@ -20,10 +20,6 @@ module Houston
           # Public API for a VersionControl::Adapter Repo
           # ------------------------------------------------------------------------- #
 
-          def all_commit_times
-            `git --git-dir=#{git_dir} log --all --pretty='%at'`.split(/\n/).uniq
-          end
-
           def all_commits
             `git --git-dir=#{git_dir} log --all --pretty='%H'`.split(/\n/).uniq
           end

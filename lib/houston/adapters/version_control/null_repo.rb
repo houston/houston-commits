@@ -7,10 +7,6 @@ module Houston
         # Public API for a VersionControl::Adapter Repo
         # ------------------------------------------------------------------------- #
 
-        def all_commit_times
-          []
-        end
-
         def all_commits
           []
         end
