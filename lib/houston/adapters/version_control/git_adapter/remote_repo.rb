@@ -94,17 +94,19 @@ module Houston
 
               # Fetch
               Houston.try({max_tries: 3, base: 0}, Rugged::OSError, Rugged::SshError) do
-                connection.remotes["origin"].fetch(nil, options.merge({
-                  update_tips: Proc.new do |refname, _, new_oid|
-                    if new_oid.nil?
-                      Rails.logger.debug "[git:pull] Deleting #{refname}"
-                      connection.references.delete(refname)
-                    else
-                      Rails.logger.debug "[git:pull] Setting #{refname} to #{new_oid[0...7]}"
-                      connection.references.create(refname, new_oid, force: true)
+                with_corrupted_loose_reference_fix do
+                  connection.remotes["origin"].fetch(nil, options.merge({
+                    update_tips: Proc.new do |refname, _, new_oid|
+                      if new_oid.nil?
+                        Rails.logger.debug "[git:pull] Deleting #{refname}"
+                        connection.references.delete(refname)
+                      else
+                        Rails.logger.debug "[git:pull] Setting #{refname} to #{new_oid[0...7]}"
+                        connection.references.create(refname, new_oid, force: true)
+                      end
                     end
-                  end
-                }))
+                  }))
+                end
                 release
               end
 
@@ -157,6 +159,26 @@ module Houston
 
             Rails.logger.warn "\e[31m[remote_repo.rename] Failed to rename #{old_git_path} to #{File.basename(new_git_path)}\e[0m"
             false
+          end
+
+          # On Rugged 0.25.1.1, sometimes after rebasing, the repo can end up
+          # with a ref identified by 0-byte file. Encountering this, Rugged
+          # will raise an error saying it is a "Corrupted loose reference file".
+          #
+          # The manual fix is to delete the file and retry the fetch.
+          def with_corrupted_loose_reference_fix
+            tries ||= []
+            yield
+          rescue Rugged::ReferenceError
+            relative_path = $!.message[/Corrupted loose reference file: (.*)/, 1]
+            raise unless relative_path
+            path = connection.path + relative_path
+            raise if tries.member?(path)
+            raise unless File.exists?(path) && File.size(path).zero?
+
+            tries.push(path)
+            File.delete(path)
+            retry
           end
 
         end
