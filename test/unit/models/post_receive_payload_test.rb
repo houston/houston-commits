@@ -5,7 +5,7 @@ class PostReceivePayloadTest < ActiveSupport::TestCase
 
   should "be able to parse JSON payloads from GitHub" do
     assert_equal "0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c",
-      PostReceivePayload.new(github_push_event_payload).commit
+      PostReceivePayload.new(github_push_event_payload).sha
   end
 
 private

@@ -1,13 +1,12 @@
 class PostReceivePayload
+  attr_reader :agent_email, :sha, :branch
 
   def initialize(params)
     parse_params(params)
   end
 
-  attr_reader :agent_email, :commit, :branch
-
   def parsed?
-    commit.present?
+    sha.present?
   end
 
   def parse_params(params)
@@ -16,7 +15,7 @@ class PostReceivePayload
   end
 
   def parse_github_style_params(params)
-    @commit = params["after"]
+    @sha = params["after"]
     @agent_email = parse_github_style_agent(params["pusher"])
     @branch = params["ref"].split("/").last if params.key?("ref")
   end
