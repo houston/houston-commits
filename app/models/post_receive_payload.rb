@@ -1,5 +1,5 @@
 class PostReceivePayload
-  attr_reader :agent_email, :sha, :branch
+  attr_reader :sha, :agent_email, :branch
 
   def initialize(params)
     parse_params(params)
@@ -7,6 +7,10 @@ class PostReceivePayload
 
   def parsed?
     sha.present?
+  end
+
+  def to_h
+    { sha: sha, agent_email: agent_email, branch: branch }
   end
 
   def parse_params(params)
