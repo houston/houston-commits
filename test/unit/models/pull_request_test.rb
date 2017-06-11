@@ -96,7 +96,7 @@ class PullRequestTest < ActiveSupport::TestCase
           end
 
           should "associate itself with all the commits again" do
-            mock(pull_request.project.commits).between(
+            stub(pull_request.project).commits.mock!.between(
               "a5c551d52bb0bb8a702f70879ac9caeb12a721fc",
               "baa3ef218a40f23fe542f98d8b8e60a2e8e0bff0").once.returns([])
             pull_request.save!
@@ -120,7 +120,7 @@ class PullRequestTest < ActiveSupport::TestCase
           end
 
           should "associate itself with all the commits again" do
-            mock(pull_request.project.commits).between(
+            stub(pull_request.project).commits.mock!.between(
               "e0e4580f44317a084dd5142fef6b4144a4394819",
               "a5c551d52bb0bb8a702f70879ac9caeb12a721fc").once.returns([])
             pull_request.save!

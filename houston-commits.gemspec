@@ -25,6 +25,6 @@ Gem::Specification.new do |spec|
   # For integration with GitHub
   spec.add_dependency "octokit", "~> 4.6.2"
 
-  spec.add_development_dependency "bundler", "~> 1.11.2"
+  spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake", "~> 10.0"
 end

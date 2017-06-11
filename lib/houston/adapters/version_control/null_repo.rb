@@ -54,13 +54,6 @@ module Houston
           false
         end
 
-        # ------------------------------------------------------------------------- #
-
-
-        def nil?
-          true
-        end
-
       end
 
       NullRepo = NullRepoClass.new

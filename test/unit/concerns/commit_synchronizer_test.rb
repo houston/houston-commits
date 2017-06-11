@@ -94,7 +94,7 @@ class CommitSynchronizerTest < ActiveSupport::TestCase
       end
 
       should "return nil" do
-        assert_equal nil, project.find_commit_by_sha("aaaaaaaa")
+        assert_nil project.find_commit_by_sha("aaaaaaaa")
       end
     end
   end

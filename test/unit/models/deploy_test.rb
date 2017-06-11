@@ -86,7 +86,7 @@ class DeployTest < ActiveSupport::TestCase
       end
 
       should "be able to list the commits that were deployed" do
-        mock(project.commits).between(previous_deploy.sha, commit.sha)
+        stub(project).commits.mock!.between(previous_deploy.sha, commit.sha)
           .returns(:list_of_commits)
         assert_equal :list_of_commits, deploy.commits
       end
