@@ -73,7 +73,7 @@ class Deploy < ActiveRecord::Base
   end
 
   def url
-    "https://#{Houston.config.host}/projects/#{project.slug}/deploys/#{id}"
+    "#{Houston.root_url}/projects/#{project.slug}/deploys/#{id}"
   end
 
 
