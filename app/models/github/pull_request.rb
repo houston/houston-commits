@@ -45,11 +45,7 @@ module Github
       # Also, on my computer it took 19 seconds to fetch 39 pull
       # requests from 52 repos.
       def fetch!(projects = Project.unretired)
-        repos = projects
-          .where("props->>'git.location' LIKE '%github.com%'")
-          .pluck("props->>'git.location'")
-          .map { |url| _repo_name_from_url(url) }
-          .compact
+        repos = projects.github_repo_names
 
         Houston.benchmark "Fetching pull requests" do
           requests = 0
@@ -72,10 +68,6 @@ module Github
           Rails.logger.info "[pulls] #{requests} requests; #{Houston.github.last_response.headers["x-ratelimit-remaining"]} remaining"
           pulls
         end
-      end
-
-      def _repo_name_from_url(url)
-        url[/\Agit@github\.com:(.*)\.git\Z/, 1] || url[/\Agit:\/\/github.com\/(.*)\.git\Z/, 1]
       end
 
       def _fetch_issues_for!(repo)

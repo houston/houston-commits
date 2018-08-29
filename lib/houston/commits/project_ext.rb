@@ -46,6 +46,22 @@ module Houston
 
 
 
+      module ClassMethods
+
+        def on_github
+          where("props->>'git.location' LIKE '%github.com%'")
+        end
+
+        def github_repo_names
+          on_github.pluck("props->>'git.location'").map(&method(:_repo_name_from_url)).compact
+        end
+
+        private def _repo_name_from_url(url)
+          url[/\Agit@github\.com:(.*)\.git\Z/, 1] || url[/\Agit:\/\/github.com\/(.*)\.git\Z/, 1]
+        end
+
+      end
+
     end
   end
 end
