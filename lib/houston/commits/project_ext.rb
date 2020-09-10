@@ -7,7 +7,7 @@ module Houston
         has_many :commits, dependent: :destroy, extend: CommitSynchronizer
         has_many :deploys
         has_many :pull_requests, class_name: "Github::PullRequest"
-        belongs_to :head, class_name: "Commit", foreign_key: "head_sha", primary_key: "sha"
+        belongs_to :head, class_name: "Commit", foreign_key: "head_sha", primary_key: "sha", optional: true
 
         has_adapter :VersionControl
       end
