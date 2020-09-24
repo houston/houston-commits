@@ -2,7 +2,7 @@ class Deploy < ActiveRecord::Base
   include BelongsToCommit
 
   belongs_to :project
-  belongs_to :user
+  belongs_to :user, optional: true
 
   validates :project_id, :environment_name, presence: true
 
