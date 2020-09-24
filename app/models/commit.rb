@@ -1,7 +1,7 @@
 class Commit < ActiveRecord::Base
 
   belongs_to :project
-  belongs_to :parent, foreign_key: :parent_sha, primary_key: :sha, class_name: "Commit"
+  belongs_to :parent, foreign_key: :parent_sha, primary_key: :sha, class_name: "Commit", optional: true
   has_many :children, foreign_key: :parent_sha, primary_key: :sha, class_name: "Commit"
   has_and_belongs_to_many :committers, class_name: "User"
   has_and_belongs_to_many :pull_requests, class_name: "Github::PullRequest"
