@@ -8,7 +8,7 @@ module Github
     attr_accessor :actor
 
     belongs_to :project
-    belongs_to :user
+    belongs_to :user, optional: true
     has_and_belongs_to_many :commits
     belongs_to :base, class_name: "Commit", foreign_key: "base_sha", primary_key: "sha"
     belongs_to :head, class_name: "Commit", foreign_key: "head_sha", primary_key: "sha"
