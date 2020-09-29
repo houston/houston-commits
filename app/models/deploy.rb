@@ -103,7 +103,7 @@ private
   end
 
   def just_completed?
-    completed_at_changed? && completed?
+    saved_change_to_completed_at? && completed?
   end
 
 end
