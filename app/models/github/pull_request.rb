@@ -23,9 +23,9 @@ module Github
     end
 
     after_update do
-      Houston.observer.fire "github:pull:updated", pull_request: self, changes: changes
-      Houston.observer.fire "github:pull:closed", pull_request: self if closed_at_changed? && closed_at
-      Houston.observer.fire "github:pull:reopened", pull_request: self if closed_at_changed? && !closed_at
+      Houston.observer.fire "github:pull:updated", pull_request: self, changes: saved_changes
+      Houston.observer.fire "github:pull:closed", pull_request: self if saved_change_to_closed_at? && closed_at
+      Houston.observer.fire "github:pull:reopened", pull_request: self if saved_change_to_closed_at? && !closed_at
       true
     end
 
