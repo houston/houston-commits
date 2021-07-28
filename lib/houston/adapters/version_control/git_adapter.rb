@@ -74,6 +74,8 @@ module Houston
           SSH_PUBLICKEY = File.expand_path("~/.ssh/id_rsa.pub").freeze
 
           def local_path?(location)
+            return false if location.to_s =~ /@/ # If there's an @, then it's not local
+
             !Addressable::URI.parse(location.to_s).absolute?
           end
 
