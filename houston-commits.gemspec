@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "houston-core", ">= 0.8.0"
 
   # Implements Houston's VersionControl::GitAdapter
-  spec.add_dependency "rugged", "~> 0.26.0"
+  spec.add_dependency "rugged", "~> 0.27.0"
 
   # For integration with GitHub
   spec.add_dependency "octokit", ">= 4.9.0"
